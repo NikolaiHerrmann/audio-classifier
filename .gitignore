@@ -5,3 +5,7 @@
 wav_digits/
 txt_lpccs/
 txt_mfccs/
+
+mp4a*
+
+figures/
