@@ -9,3 +9,7 @@ txt_mfccs/
 mp4a*
 
 figures/
+
+spoken_digits/spectrograms
+spoken_digits/min_max_values.pkl
+__pycache__
