@@ -5,7 +5,7 @@ import seaborn as sns
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.manifold import TSNE
 import utils
 
@@ -69,6 +69,13 @@ def plot_cnn_training(history):
     plt.plot(history.history['val_loss'])
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
+    plt.show()
+
+def plot_rf_training(cm):
+    cm_plot = ConfusionMatrixDisplay(cm)
+    cm_plot.plot()
+    plt.xlabel("Predicted Speaker")
+    plt.ylabel("True Speaker")
     plt.show()
 
 def plot_tsne(x, y, lim=24):

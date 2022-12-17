@@ -2,7 +2,7 @@ import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils import shuffle
 from sklearn.model_selection import StratifiedKFold
@@ -13,25 +13,13 @@ import tensorflow as tf
 from tensorflow.keras import layers, Sequential
 
 
-def random_forest(X_train, y_train, X_test, y_test):
+def train_rf(X_train, y_train):
     model = RandomForestClassifier(random_state=RANDOM_STATE)
-
     X_train_shuffle, y_train_shuffle = shuffle(X_train, y_train, random_state=RANDOM_STATE)
-
     model.fit(X_train_shuffle, y_train_shuffle)
+    return model
 
-    y_pred = model.predict(X_test)
-    print("Accuracy", accuracy_score(y_test, y_pred))
-    print("F1-Score", f1_score(y_test, y_pred, average='weighted'))
-
-    cm = confusion_matrix(y_test, y_pred)
-    cm_plot = ConfusionMatrixDisplay(cm)
-    cm_plot.plot()
-    plt.xlabel("Predicted Speaker")
-    plt.ylabel("True Speaker")
-    plt.show()
-
-def train_model(input_shape, X_train, y_train, epochs=200, batch_size=32):
+def train_cnn(input_shape, X_train, y_train, epochs=200, batch_size=32):
     X_train, y_train = tuple(map(np.array, [X_train, y_train]))
     cnn_model = Sequential(
         [
@@ -56,22 +44,42 @@ def train_model(input_shape, X_train, y_train, epochs=200, batch_size=32):
     )
     return history, cnn_model
 
-def cross_val(input_shape, X_train, y_train, num_folds=1):
+def cross_val_rf(X_train, y_train, num_folds):
+    i = 1
+    precision_per_fold = []
+    kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
+    for train, test in kfold.split(X_train, y_train):
+        print(X_train[train], type(X_train))
+        model = train_rf(X_train[train], y_train[train])
+        cm = eval_rf(model, X_train[test], y_train[test])
+        precision = cm.diagonal() / cm.sum(axis=0)
+        precision_per_fold.append(precision)
+        i += 1
+    print(f"Cross-validation results for {num_folds} folds -> avg. loss: {sum(precision) / num_folds}")
+
+def cross_val_cnn(input_shape, X_train, y_train, num_folds):
     i = 1
     acc_per_fold = []
     loss_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
     for train, test in kfold.split(X_train, y_train):
-        history, cnn_model = train_model(input_shape, X_train[train], y_train[train])
-        loss, acc = eval_model(cnn_model, X_train[test], y_train[test])
+        history, cnn_model = train_cnn(input_shape, X_train[train], y_train[train])
+        loss, acc = eval_cnn(cnn_model, X_train[test], y_train[test])
         loss_per_fold.append(loss)
         acc_per_fold.append(acc)
         i += 1
     print(f"Cross-validation results for {num_folds} folds -> avg. loss: {sum(loss_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
 
-def eval_model(model, X_test, y_test):
+def eval_cnn(model, X_test, y_test):
     X_test, y_test = tuple(map(np.array, [X_test, y_test]))
     score = model.evaluate(x=X_test, y=y_test, verbose=0)
     loss, accuracy = score[:2]
     print(f'Test loss: {loss} / Test accuracy: {accuracy}')
     return loss, accuracy
+
+def eval_rf(model, X_test, y_test):
+    y_pred = model.predict(X_test)
+    print("Accuracy", accuracy_score(y_test, y_pred))
+    print("F1-Score", f1_score(y_test, y_pred, average='weighted'))
+    return confusion_matrix(y_test, y_pred)
+
