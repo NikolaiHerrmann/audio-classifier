@@ -1,5 +1,3 @@
-import os
-
 import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,14 +5,11 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils import shuffle
-from sklearn.model_selection import train_test_split
-# prevent tensorflow gpu warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+from utils import RANDOM_STATE
 
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
-from utils import RANDOM_STATE
-
 
 
 def random_forest(X_train, y_train, X_test, y_test):
@@ -64,7 +59,7 @@ def train_cnn_model(input_shape, X_train, y_train, X_test, y_test, epochs=200, b
     return history, cnn_model
 
 def eval_model(model, X_test, y_test):
-    X_train, X_test = tuple(map(np.array, [X_train, X_test]))
+    X_test, y_test = tuple(map(np.array, [X_test, y_test]))
     score = model.evaluate(x=X_test, 
                                y=y_test, 
                                verbose=0)
