@@ -17,6 +17,7 @@ from sklearn.linear_model import LinearRegression
 
 RANDOM_STATE = 44
 
+
 def seed():
     random.seed(RANDOM_STATE)
     np.random.seed(RANDOM_STATE)
@@ -41,13 +42,15 @@ def stretch(rec, new_len):
 
     return new_rec.T
 
+
 def uniform_scaling(X, new_len):
     """
     Stretch all recordings to length new_len using linear interpolation
     returns new copy of X with modified elements
     """
-    pool = Pool()
-    return pool.map(partial(stretch, new_len=new_len), X)
+    with Pool() as pool:
+        return pool.map(partial(stretch, new_len=new_len), X)
+
 
 def slope_mean_std(rec, n_windows):
     feats = []
@@ -75,5 +78,5 @@ def extract_features(X, n_windows=3):
     """
     assert X[0].shape[0] % n_windows == 0, "Cannot split windows equally! " + str(X[0].shape[0])
     
-    pool = Pool()
-    return np.array(pool.map(partial(slope_mean_std, n_windows=n_windows), X))
+    with Pool() as pool:
+        return np.array(pool.map(partial(slope_mean_std, n_windows=n_windows), X))
