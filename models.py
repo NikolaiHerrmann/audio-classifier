@@ -20,7 +20,6 @@ def train_rf(X_train, y_train):
     return model
 
 def train_cnn(input_shape, X_train, y_train, epochs=200, batch_size=32):
-    X_train, y_train = tuple(map(np.array, [X_train, y_train]))
     cnn_model = Sequential(
         [
             layers.Input(shape=input_shape),
@@ -46,16 +45,16 @@ def train_cnn(input_shape, X_train, y_train, epochs=200, batch_size=32):
 
 def cross_val_rf(X_train, y_train, num_folds):
     i = 1
-    precision_per_fold = []
+    acc_per_fold = []
+    f1_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
     for train, test in kfold.split(X_train, y_train):
-        print(X_train[train], type(X_train))
         model = train_rf(X_train[train], y_train[train])
-        cm = eval_rf(model, X_train[test], y_train[test])
-        precision = cm.diagonal() / cm.sum(axis=0)
-        precision_per_fold.append(precision)
+        cm, acc, f1 = eval_rf(model, X_train[test], y_train[test])
+        acc_per_fold.append(acc)
+        f1_per_fold.append(f1)
         i += 1
-    print(f"Cross-validation results for {num_folds} folds -> avg. loss: {sum(precision) / num_folds}")
+    print(f"Cross-validation results for {num_folds} folds -> avg. f1: {sum(f1_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
 
 def cross_val_cnn(input_shape, X_train, y_train, num_folds):
     i = 1
@@ -79,7 +78,8 @@ def eval_cnn(model, X_test, y_test):
 
 def eval_rf(model, X_test, y_test):
     y_pred = model.predict(X_test)
-    print("Accuracy", accuracy_score(y_test, y_pred))
-    print("F1-Score", f1_score(y_test, y_pred, average='weighted'))
-    return confusion_matrix(y_test, y_pred)
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    print(f'Test accuracy: {acc} / Test F1: {f1}')
+    return confusion_matrix(y_test, y_pred), acc, f1
 
