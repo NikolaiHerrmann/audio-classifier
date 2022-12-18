@@ -19,13 +19,13 @@ def train_rf(X_train, y_train):
     model.fit(X_train_shuffle, y_train_shuffle)
     return model
 
-def train_cnn(input_shape, X_train, y_train, epochs=200, batch_size=32):
+def train_cnn(input_shape, X_train, y_train, n_classes, epochs=200, batch_size=32):
     cnn_model = Sequential(
         [
             layers.Input(shape=input_shape),
             layers.Conv1D(filters=64, kernel_size=3, activation="relu"),
             layers.GlobalAveragePooling1D(),
-            layers.Dense(9, activation="softmax")
+            layers.Dense(n_classes, activation="softmax")
         ]
     )
 
@@ -56,13 +56,13 @@ def cross_val_rf(X_train, y_train, num_folds):
         i += 1
     print(f"Cross-validation results for {num_folds} folds -> avg. f1: {sum(f1_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
 
-def cross_val_cnn(input_shape, X_train, y_train, num_folds):
+def cross_val_cnn(input_shape, X_train, y_train, num_folds, n_classes):
     i = 1
     acc_per_fold = []
     loss_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
     for train, test in kfold.split(X_train, y_train):
-        history, cnn_model = train_cnn(input_shape, X_train[train], y_train[train])
+        history, cnn_model = train_cnn(input_shape, X_train[train], y_train[train], n_classes)
         loss, acc = eval_cnn(cnn_model, X_train[test], y_train[test])
         loss_per_fold.append(loss)
         acc_per_fold.append(acc)
