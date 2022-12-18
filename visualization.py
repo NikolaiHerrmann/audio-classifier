@@ -59,14 +59,14 @@ def plot_recordings(X):
 
 def plot_cnn_training(history):
     plt.plot(history.history['sparse_categorical_accuracy'])
-    plt.plot(history.history['val_sparse_categorical_accuracy'])
+    #plt.plot(history.history['val_sparse_categorical_accuracy'])
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.ylim(0.6, 1.0)
     plt.show()
 
     plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
+    #plt.plot(history.history['val_loss'])
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.show()

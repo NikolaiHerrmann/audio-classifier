@@ -1,13 +1,6 @@
 import os
 
 import numpy as np
-from sklearn.model_selection import train_test_split
-
-# prevent tensorflow gpu warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-import tensorflow as tf
-from tensorflow.keras import layers, Sequential
 from utils import uniform_scaling
 
 
