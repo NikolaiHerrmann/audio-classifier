@@ -1,0 +1,20 @@
+SVM
+Digits: SVC(C=1, kernel='linear', random_state=44)
+Test accuracy: 0.981081081081081 / Test F1: 0.98119030630234
+
+Vowels: SVC(C=10, random_state=44)
+Test accuracy: 0.9966666666666667 / Test F1: 0.9966663332999
+
+RF
+Digits: RandomForestClassifier(n_estimators=50, random_state=44)
+Test accuracy: 0.9675675675675676 / Test F1: 0.9675177892308137
+
+Vowels: RandomForestClassifier(random_state=44)
+Test accuracy: 0.9933333333333333 / Test F1: 0.9933326665999933
+
+LR
+Digits: LogisticRegression(C=10, random_state=44, solver='liblinear')
+Test accuracy: 0.9837837837837838 / Test F1: 0.9838762988109437
+
+Vowels: LogisticRegression(C=50, random_state=44, solver='newton-cg')
+Test accuracy: 0.9766666666666667 / Test F1: 0.9766613516093506
