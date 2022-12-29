@@ -11,6 +11,7 @@ from utils import RANDOM_STATE
 
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
+from tqdm import tqdm
 
 
 def train_rf(X_train, y_train):
@@ -48,7 +49,7 @@ def cross_val_rf(X_train, y_train, num_folds):
     acc_per_fold = []
     f1_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
-    for train, test in kfold.split(X_train, y_train):
+    for train, test in tqdm(kfold.split(X_train, y_train)):
         model = train_rf(X_train[train], y_train[train])
         cm, acc, f1 = eval_rf(model, X_train[test], y_train[test])
         acc_per_fold.append(acc)
@@ -61,7 +62,7 @@ def cross_val_cnn(input_shape, X_train, y_train, num_folds, n_classes):
     acc_per_fold = []
     loss_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
-    for train, test in kfold.split(X_train, y_train):
+    for train, test in tqdm(kfold.split(X_train, y_train)):
         history, cnn_model = train_cnn(input_shape, X_train[train], y_train[train], n_classes)
         loss, acc = eval_cnn(cnn_model, X_train[test], y_train[test])
         loss_per_fold.append(loss)
@@ -73,7 +74,7 @@ def eval_cnn(model, X_test, y_test):
     X_test, y_test = tuple(map(np.array, [X_test, y_test]))
     score = model.evaluate(x=X_test, y=y_test, verbose=0)
     loss, accuracy = score[:2]
-    print(f'Test loss: {loss} / Test accuracy: {accuracy}')
+    # print(f'Test loss: {loss} / Test accuracy: {accuracy}')
     return loss, accuracy
 
 def eval_rf(model, X_test, y_test):

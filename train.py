@@ -19,7 +19,8 @@ def train_japanese_vowels(plot=False):
     history, cnn_model = train_cnn(input_shape_vowels, X_train, y_train, n_classes=9)
     if plot:
         plot_cnn_training(history)
-    eval_cnn(cnn_model, X_test_vowels_uni, y_test_vowels)
+    loss, accuracy = eval_cnn(cnn_model, X_test_vowels_uni, y_test_vowels)
+    print(f'Test loss: {loss} / Test accuracy: {accuracy}')
 
     # Cross-validation
     cross_val_cnn(input_shape_vowels, X_train, y_train, num_folds=5, n_classes=9)
@@ -37,13 +38,14 @@ def train_japanese_vowels(plot=False):
     cm, acc, f1 = eval_rf(model, X_feat_test_vowels, y_test_vowels)
     if plot:
         plot_rf_training(cm)
+    print(f'Test accuracy: {acc} / Test F1: {f1}')
 
     # Cross-validation
     cross_val_rf(X_train, y_train, 5)
 
 def train_spoken_digits(plot=False):
     X_digits, y_digits_num, y_digits_speaker = get_spoken_digits()
-    X_train_digits, X_test_digits, y_train_digits, y_test_digits = train_test_split(X_digits, y_digits_speaker, test_size=0.5, stratify=y_digits_speaker)
+    X_train_digits, X_test_digits, y_train_digits, y_test_digits = train_test_split(X_digits, y_digits_speaker, test_size=0.1, stratify=y_digits_speaker)
     if plot:
         plot_rec_len_freq(X_train_digits, "Train", xmax=160)
         plot_rec_len_freq(X_test_digits, "Test", xmax=80)
@@ -56,7 +58,8 @@ def train_spoken_digits(plot=False):
     history_digits, cnn_model_digits = train_cnn(input_shape_digits, X_train, y_train, n_classes=6)
     if plot:
         plot_cnn_training(history_digits)
-    eval_cnn(cnn_model_digits, X_test_digits_uni, y_test_digits)
+    loss, accuracy = eval_cnn(cnn_model_digits, X_test_digits_uni, y_test_digits)
+    print(f'Test loss: {loss} / Test accuracy: {accuracy}')
 
     # Cross-validation
     cross_val_cnn(input_shape_digits, X_train, y_train, num_folds=5, n_classes=6)
@@ -70,6 +73,7 @@ def train_spoken_digits(plot=False):
     cm, acc, f1 = eval_rf(model, X_feat_test_digits, y_test_digits)
     if plot:
         plot_rf_training(cm)
+    print(f'Test accuracy: {acc} / Test F1: {f1}')
 
     # Cross-validation
     cross_val_rf(X_train, y_train, 5)
