@@ -22,26 +22,26 @@ def train_japanese_vowels(plot=False):
     loss, accuracy = eval_cnn(cnn_model, X_test_vowels_uni, y_test_vowels)
     print(f'Test loss: {loss} / Test accuracy: {accuracy}')
 
-    # Cross-validation
-    cross_val_cnn(input_shape_vowels, X_train, y_train, num_folds=5, n_classes=9)
+    # # Cross-validation
+    # cross_val_cnn(input_shape_vowels, X_train, y_train, num_folds=5, n_classes=9)
 
-    # RF
-    X_feat_train_vowels = extract_features(X_train_vowels_uni)
-    X_feat_test_vowels = extract_features(X_test_vowels_uni)
-    X_train, y_train = tuple(map(np.array, [X_feat_train_vowels, y_train_vowels]))
-    if plot:
-        plot_tsne(X_feat_train_vowels, y_train_vowels)
-        plot_tsne(X_feat_test_vowels, y_test_vowels)
+    # # RF
+    # X_feat_train_vowels = extract_features(X_train_vowels_uni)
+    # X_feat_test_vowels = extract_features(X_test_vowels_uni)
+    # X_train, y_train = tuple(map(np.array, [X_feat_train_vowels, y_train_vowels]))
+    # if plot:
+    #     plot_tsne(X_feat_train_vowels, y_train_vowels)
+    #     plot_tsne(X_feat_test_vowels, y_test_vowels)
 
-    # One model
-    model = train_handcrafted(X_train, y_train)
-    cm, acc, f1 = eval_rf(model, X_feat_test_vowels, y_test_vowels)
-    if plot:
-        plot_rf_training(cm)
-    print(f'Test accuracy: {acc} / Test F1: {f1}')
+    # # One model
+    # model = train_handcrafted(X_train, y_train)
+    # cm, acc, f1 = eval_rf(model, X_feat_test_vowels, y_test_vowels)
+    # if plot:
+    #     plot_rf_training(cm)
+    # print(f'Test accuracy: {acc} / Test F1: {f1}')
 
-    # Cross-validation
-    cross_val_handcrafted(X_train, y_train, 5)
+    # # Cross-validation
+    # cross_val_handcrafted(X_train, y_train, 5)
 
 def train_spoken_digits(plot=False):
     X_digits, y_digits_num, y_digits_speaker = get_spoken_digits()
@@ -80,4 +80,4 @@ def train_spoken_digits(plot=False):
 
 if __name__ == "__main__":
     train_japanese_vowels()
-    train_spoken_digits()
+    # train_spoken_digits()
