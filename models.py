@@ -3,9 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.utils import shuffle
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, GridSearchCV
 
 from utils import RANDOM_STATE
 
@@ -14,10 +16,21 @@ from tensorflow.keras import layers, Sequential
 from tqdm import tqdm
 
 
-def train_rf(X_train, y_train):
-    model = RandomForestClassifier(random_state=RANDOM_STATE)
+def train_handcrafted(X_train, y_train):
+    # params = {'n_estimators': [10, 20, 50, 100]}
+    # model = GridSearchCV(RandomForestClassifier(random_state=RANDOM_STATE, n_jobs=-1), params, n_jobs=-1)
+
+    # params = {'C': [1, 10, 20, 50], 'solver': ['liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}
+    # model = GridSearchCV(LogisticRegression(random_state=RANDOM_STATE), params)
+    
+    params = {'C': [1, 10, 20, 50], 'kernel': ['linear', 'poly', 'rbf', 'sigmoid'], 'degree': [3, 6, 9]}
+    model = GridSearchCV(SVC(random_state=RANDOM_STATE), params, n_jobs=-1)
     X_train_shuffle, y_train_shuffle = shuffle(X_train, y_train, random_state=RANDOM_STATE)
     model.fit(X_train_shuffle, y_train_shuffle)
+
+    print("\n The best estimator across ALL searched params:\n", model.best_estimator_)
+    print("\n The best score across ALL searched params:\n", model.best_score_)
+    print("\n The best parameters across ALL searched params:\n", model.best_params_)
     return model
 
 def train_cnn(input_shape, X_train, y_train, n_classes, epochs=200, batch_size=32):
@@ -44,13 +57,13 @@ def train_cnn(input_shape, X_train, y_train, n_classes, epochs=200, batch_size=3
     )
     return history, cnn_model
 
-def cross_val_rf(X_train, y_train, num_folds):
+def cross_val_handcrafted(X_train, y_train, num_folds):
     i = 1
     acc_per_fold = []
     f1_per_fold = []
     kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
     for train, test in tqdm(kfold.split(X_train, y_train)):
-        model = train_rf(X_train[train], y_train[train])
+        model = train_handcrafted(X_train[train], y_train[train])
         cm, acc, f1 = eval_rf(model, X_train[test], y_train[test])
         acc_per_fold.append(acc)
         f1_per_fold.append(f1)
@@ -74,13 +87,11 @@ def eval_cnn(model, X_test, y_test):
     X_test, y_test = tuple(map(np.array, [X_test, y_test]))
     score = model.evaluate(x=X_test, y=y_test, verbose=0)
     loss, accuracy = score[:2]
-    # print(f'Test loss: {loss} / Test accuracy: {accuracy}')
     return loss, accuracy
 
 def eval_rf(model, X_test, y_test):
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred, average='weighted')
-    print(f'Test accuracy: {acc} / Test F1: {f1}')
     return confusion_matrix(y_test, y_pred), acc, f1
 
