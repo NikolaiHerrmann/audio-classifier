@@ -1,7 +1,7 @@
 from visualization import *
 from datasets import *
 from utils import *
-from models import *
+from handcrafted import HandcraftedModel
 from sklearn.model_selection import train_test_split
 from cnn import CnnModel
 
@@ -36,14 +36,15 @@ def train_japanese_vowels(plot=False):
         plot_tsne(X_feat_test_vowels, y_test_vowels)
 
     # One model
-    model = train_handcrafted(X_train, y_train)
-    cm, acc, f1 = eval_rf(model, X_feat_test_vowels, y_test_vowels)
+    hand_crafted_model = HandcraftedModel('svm')
+    model = hand_crafted_model.train(X_train, y_train)
+    cm, acc, f1 = hand_crafted_model.eval(model, X_feat_test_vowels, y_test_vowels)
     if plot:
         plot_rf_training(cm)
     print(f'Test accuracy: {acc} / Test F1: {f1}')
 
     # Cross-validation
-    cross_val_handcrafted(X_train, y_train, 5)
+    hand_crafted_model.cross_val(X_train, y_train, 5)
 
 def train_spoken_digits(plot=False):
     X_digits, y_digits_num, y_digits_speaker = get_spoken_digits()
@@ -72,14 +73,15 @@ def train_spoken_digits(plot=False):
     X_train, y_train = tuple(map(np.array, [X_feat_train_digits, y_train_digits]))
 
     # One model
-    model = train_handcrafted(X_train, y_train)
-    cm, acc, f1 = eval_rf(model, X_feat_test_digits, y_test_digits)
+    hand_crafted_model = HandcraftedModel('svm')
+    model = hand_crafted_model.train(X_train, y_train)
+    cm, acc, f1 = hand_crafted_model.eval(model, X_feat_test_digits, y_test_digits)
     if plot:
         plot_rf_training(cm)
     print(f'Test accuracy: {acc} / Test F1: {f1}')
 
     # Cross-validation
-    cross_val_handcrafted(X_train, y_train, 5)
+    hand_crafted_model.cross_val(X_train, y_train, 5)
 
 if __name__ == "__main__":
     train_japanese_vowels()

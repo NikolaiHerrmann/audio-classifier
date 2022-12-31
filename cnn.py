@@ -6,6 +6,11 @@ import tensorflow as tf
 from tensorflow.keras import layers, Sequential, optimizers
 from tqdm import tqdm
 import keras_tuner as kt
+from utils import RANDOM_STATE
+import os
+
+# prevent tensorflow gpu warnings
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 class CnnModel:
     def __init__(self, input_shape, n_classes) -> None:
@@ -48,7 +53,7 @@ class CnnModel:
         )
         return model
 
-    def train(self, X_train, y_train, epochs=50, batch_size=32):
+    def train(self, X_train, y_train, epochs=100, batch_size=32):
         train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
         if not self.best_params:
             self.tuner = kt.Hyperband(
@@ -76,16 +81,14 @@ class CnnModel:
         return history, cnn_model
 
     def cross_val(self, X_train, y_train, num_folds):
-        i = 1
         acc_per_fold = []
         loss_per_fold = []
-        kfold = StratifiedKFold(n_splits=num_folds, shuffle=True)
-        for train, test in tqdm(kfold.split(X_train, y_train)):
+        kfold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=RANDOM_STATE)
+        for train, test in tqdm(kfold.split(X_train, y_train), total=num_folds):
             history, cnn_model = self.train(X_train[train], y_train[train])
             loss, acc = self.eval(cnn_model, X_train[test], y_train[test])
             loss_per_fold.append(loss)
             acc_per_fold.append(acc)
-            i += 1
         print(f"Cross-validation results for {num_folds} folds -> avg. loss: {sum(loss_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
 
     def eval(self, model, X_test, y_test):
