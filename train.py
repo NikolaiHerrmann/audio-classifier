@@ -59,8 +59,8 @@ def train_spoken_digits(plot=False):
     # Cross-validation
     cnn_model.cross_val(X_train, y_train, num_folds=5)
 
-    X_feat_train_digits = extract_features(X_train_digits_uni, n_windows=5)
-    X_feat_test_digits = extract_features(X_test_digits_uni, n_windows=5)
+    X_feat_train_digits = extract_features(X_train_digits_uni)
+    X_feat_test_digits = extract_features(X_test_digits_uni)
     X_train, y_train = tuple(map(np.array, [X_feat_train_digits, y_train_digits]))
 
     # One model
