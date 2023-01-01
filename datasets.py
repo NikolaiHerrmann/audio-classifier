@@ -1,7 +1,9 @@
 import os
 
 import numpy as np
-from utils import uniform_scaling
+from utils import uniform_scaling, RANDOM_STATE
+
+from sklearn.model_selection import train_test_split
 
 
 def get_labels(data, block_lens):
@@ -47,6 +49,7 @@ def get_japanese_vowels():
     X_test_vowels, y_test_vowels = get_labels(data_test_vowels, test_block_lens)
     return X_train_vowels, y_train_vowels, X_test_vowels, y_test_vowels
 
+
 def get_spoken_digits(is_lpcc=True):
     DIGIT_SPEAKERS = ["george", "jackson", "lucas", "nicolas", "theo", "yweweler"]
     path = os.path.join("spoken_digits", "txt_lpccs")
@@ -63,7 +66,11 @@ def get_spoken_digits(is_lpcc=True):
                 X.append(m)
                 y_digit.append(digit)
                 y_speaker.append(speaker_idx)
-    return X, y_digit, y_speaker
+
+    X_train_digits, X_test_digits, y_train_digits, y_test_digits = train_test_split(X, y_speaker, test_size=0.5, stratify=y_speaker, random_state=RANDOM_STATE)
+
+    return X_train_digits, y_train_digits, X_test_digits, y_test_digits
+
 
 def pre_process(X_train, X_test, rec_len):
     X_train_uni = uniform_scaling(X_train, rec_len)

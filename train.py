@@ -2,18 +2,13 @@ from visualization import *
 from datasets import *
 from utils import *
 from handcrafted import HandcraftedModel
-from sklearn.model_selection import train_test_split
 from cnn import CnnModel
 
 def train_japanese_vowels(plot=False):
     X_train_vowels, y_train_vowels, X_test_vowels, y_test_vowels = get_japanese_vowels()
-    if plot:
-        plot_recordings(X_train_vowels)
-        plot_rec_len_freq(X_train_vowels, "Train")
-        plot_rec_len_freq(X_test_vowels, "Test")
-
-    X_train_vowels_uni, X_test_vowels_uni = pre_process(X_train_vowels, X_test_vowels, rec_len=30)
-    input_shape_vowels = (30, 12)
+    rec_len = 15
+    X_train_vowels_uni, X_test_vowels_uni = pre_process(X_train_vowels, X_test_vowels, rec_len)
+    input_shape_vowels = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_vowels_uni, y_train_vowels]))
 
     # One model
@@ -47,14 +42,10 @@ def train_japanese_vowels(plot=False):
     hand_crafted_model.cross_val(X_train, y_train, 5)
 
 def train_spoken_digits(plot=False):
-    X_digits, y_digits_num, y_digits_speaker = get_spoken_digits()
-    X_train_digits, X_test_digits, y_train_digits, y_test_digits = train_test_split(X_digits, y_digits_speaker, test_size=0.5, stratify=y_digits_speaker)
-    if plot:
-        plot_rec_len_freq(X_train_digits, "Train", xmax=160)
-        plot_rec_len_freq(X_test_digits, "Test", xmax=80)
-
-    X_train_digits_uni, X_test_digits_uni = pre_process(X_train_digits, X_test_digits, 50)
-    input_shape_digits = (50, 12)
+    X_train_digits, y_train_digits, X_test_digits, y_test_digits = get_spoken_digits()
+    rec_len = 27
+    X_train_digits_uni, X_test_digits_uni = pre_process(X_train_digits, X_test_digits, rec_len)
+    input_shape_digits = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_digits_uni, y_train_digits]))
 
     # One model
