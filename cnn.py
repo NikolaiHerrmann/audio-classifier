@@ -53,17 +53,18 @@ class CnnModel:
         )
         return model
 
-    def train(self, X_train, y_train, epochs=100, batch_size=32):
+    def train(self, X_train, y_train, epochs=200, batch_size=32):
         train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
         if not self.best_params:
             self.tuner = kt.Hyperband(
                 self.model_builder,
-                objective='val_accuracy',
+                objective='sparse_categorical_accuracy',
                 max_epochs=100,
-                factor=3
+                factor=3,
+                overwrite=True
             )
-            stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
-            self.tuner.search(X_train, y_train, validation_split=0.2, epochs=epochs, callbacks=[stop_early])
+            stop_early = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=5)
+            self.tuner.search(train_dataset, epochs=epochs, callbacks=[stop_early])
             self.best_params = self.tuner.get_best_hyperparameters(num_trials=1)[0]
             self.learning_rate = float(self.best_params.get('learning_rate'))
             self.filters = int(self.best_params.get('filters'))
