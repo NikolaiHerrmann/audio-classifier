@@ -59,16 +59,45 @@ def plot_recordings(X):
 
 def plot_cnn_training(history):
     plt.plot(history.history['sparse_categorical_accuracy'])
-    #plt.plot(history.history['val_sparse_categorical_accuracy'])
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    plt.ylim(0.6, 1.0)
+    plt.ylim(0, 1.0)
     plt.show()
 
     plt.plot(history.history['loss'])
-    #plt.plot(history.history['val_loss'])
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
+    plt.show()
+
+def plot_cross_val(history):
+    fig, axs = plt.subplots(2,3)
+    index_to_pos = {
+        "0": [0, 0],
+        "1": [0, 1],
+        "2": [1, 0],
+        "3": [1, 1],
+        "4": [0, 2],
+    }
+    for i, h in enumerate(history):
+        pos = index_to_pos[str(i)]
+        axs[pos[0], pos[1]].plot(h.history['sparse_categorical_accuracy'])
+        axs[pos[0], pos[1]].plot(h.history['val_sparse_categorical_accuracy'])
+        axs[pos[0], pos[1]].set_ylim(0, 1.0)
+        axs[pos[0], pos[1]].set_title(f"Fold {i + 1}")
+    fig.supxlabel("Epoch")
+    fig.supylabel("Accuracy")
+    fig.delaxes(axs[1,2])
+    plt.show()
+
+    fig, axs = plt.subplots(2,3)
+    for i, h in enumerate(history):
+        pos = index_to_pos[str(i)]
+        axs[pos[0], pos[1]].plot(h.history['loss'])
+        axs[pos[0], pos[1]].plot(h.history['val_loss'])
+        axs[pos[0], pos[1]].set_title(f"Fold {i + 1}")
+    fig.supxlabel("Epoch")
+    fig.supylabel("Loss")
+    fig.delaxes(axs[1,2])
     plt.show()
 
 def plot_rf_training(cm):
