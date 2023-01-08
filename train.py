@@ -12,19 +12,19 @@ def train_japanese_vowels(plot=False):
     X_train, y_train = tuple(map(np.array, [X_train_vowels_uni, y_train_vowels]))
 
     ######################## CNN ########################
-    cnn_model = CnnModel(input_shape=input_shape_vowels, n_classes=9)
+    cnn_model = CnnModel(input_shape=input_shape_vowels, n_classes=9, data="vowels")
     history, model = cnn_model.train(X_train, y_train)
 
     # Cross-validation
-    # history = cnn_model.cross_val(X_train, y_train, num_folds=5)
-    # if plot:
-    #     plot_cross_val(history, "Vowels")
+    history = cnn_model.cross_val(X_train, y_train, num_folds=5)
+    if plot:
+        plot_cross_val(history, "Vowels")
 
     # Final accuracy CNN
     loss, accuracy, cm = cnn_model.eval(model, X_test_vowels_uni, y_test_vowels)
     print(f'Test loss: {loss} / Test accuracy: {accuracy}')
     if plot:
-        plot_cm(cm, 9)
+        plot_cm(cm, "Vowels")
 
     ######################## HC ########################
     # X_feat_train_vowels = extract_features(X_train_vowels_uni)
@@ -50,19 +50,19 @@ def train_spoken_digits(plot=False):
     X_train, y_train = tuple(map(np.array, [X_train_digits_uni, y_train_digits]))
 
     ######################## CNN ########################
-    cnn_model = CnnModel(input_shape=input_shape_digits, n_classes=6, hp_optimization=False)
+    cnn_model = CnnModel(input_shape=input_shape_digits, n_classes=6, data="digits")
     history_digits, cnn_model_digits = cnn_model.train(X_train, y_train)
 
     # Cross-validation
-    # history = cnn_model.cross_val(X_train, y_train, num_folds=5)
-    # if plot:
-    #     plot_cross_val(history, "Digits")
+    history = cnn_model.cross_val(X_train, y_train, num_folds=5)
+    if plot:
+        plot_cross_val(history, "Digits")
     
     # Final accuracy CNN
     loss, accuracy, cm = cnn_model.eval(cnn_model_digits, X_test_digits_uni, y_test_digits)
     print(f'Test loss: {loss} / Test accuracy: {accuracy}')
     if plot:
-        plot_cm(cm, 6)
+        plot_cm(cm, "Digits")
 
     ######################## HC ########################
     # X_feat_train_digits = extract_features(X_train_digits_uni)

@@ -104,8 +104,11 @@ def plot_cross_val(history, name):
     axs[1].grid()
     axs[1].legend(loc="upper right")
     fig.suptitle(f"5-fold Cross-Validation on the {name} Training Dataset")
-    plt.show()
     fig.savefig(f"cross_val_{name}.pdf")
+    axs[0].cla()
+    axs[1].cla()
+    fig.clf()
+    plt.clf()
 
 def plot_rf_training(cm):
     cm_plot = ConfusionMatrixDisplay(cm)
@@ -138,8 +141,11 @@ def plot_rec_len_freq(data_ls, title, xmax=30, xlab="Recording Length"):
     save_plot(title + "rec_len")
     plt.show()
 
-def plot_cm(cm, n_labels):
-    df_cm = pd.DataFrame(cm, range(n_labels), range(n_labels))
-    sns.heatmap(df_cm, annot=True)
-    plt.show()
-    exit()
+def plot_cm(cm, name):
+    cm_plot = ConfusionMatrixDisplay(cm)
+    cm_plot.plot()
+    plt.xlabel("Predicted Speaker")
+    plt.ylabel("True Speaker")
+    plt.title(f"Confusion Matrix for {name} Training Dataset")
+    plt.savefig(f"cm_{name}.pdf")
+    plt.clf()

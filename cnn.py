@@ -14,19 +14,18 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 class CnnModel:
-    def __init__(self, input_shape, n_classes, hp_optimization=False) -> None:
+    def __init__(self, input_shape, n_classes, hp_optimization=False, data=None) -> None:
         self.input_shape = input_shape
         self.n_classes = n_classes
-        self.best_params = {
-            "filters": 96,
-            "learning_rate": 0.01,
-            "kernel_size": 5
-        } if not hp_optimization else None
-        self.best_params_digits = {
-            "filters": 128,
-            "learning_rate": 0.01,
-            "kernel_size": 2
+        params = {
+            "vowels": [96, 5],
+            "digits": [128, 2]
         }
+        self.best_params = {
+            "filters": params[data][0],
+            "learning_rate": 0.01,
+            "kernel_size": params[data][1]
+        } if not hp_optimization else None
     
     def get_model(self):
         self.learning_rate = float(self.best_params.get('learning_rate'))
@@ -111,6 +110,6 @@ class CnnModel:
         score = model.evaluate(x=X_test, y=y_test, verbose=0)
         y_pred = model.predict(X_test)
         y_pred = [np.argmax(i) for i in y_pred]
-        cm = confusion_matrix(y_test, y_pred, normalize="pred")
+        cm = confusion_matrix(y_test, y_pred)
         loss, accuracy = score[:2]
         return loss, accuracy, cm
