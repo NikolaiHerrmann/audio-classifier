@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import seaborn as sns
-
+import pandas as pd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -69,36 +69,43 @@ def plot_cnn_training(history):
     plt.ylabel("Loss")
     plt.show()
 
-def plot_cross_val(history):
-    fig, axs = plt.subplots(2,3)
-    index_to_pos = {
-        "0": [0, 0],
-        "1": [0, 1],
-        "2": [1, 0],
-        "3": [1, 1],
-        "4": [0, 2],
-    }
-    for i, h in enumerate(history):
-        pos = index_to_pos[str(i)]
-        axs[pos[0], pos[1]].plot(h.history['sparse_categorical_accuracy'])
-        axs[pos[0], pos[1]].plot(h.history['val_sparse_categorical_accuracy'])
-        axs[pos[0], pos[1]].set_ylim(0, 1.0)
-        axs[pos[0], pos[1]].set_title(f"Fold {i + 1}")
-    fig.supxlabel("Epoch")
-    fig.supylabel("Accuracy")
-    fig.delaxes(axs[1,2])
-    plt.show()
+def plot_cross_val(history, name):
+    def get_mean(metric):
+        sum = []
+        sum_val = []
+        for i, h in enumerate(history):
+            if sum == []:
+                sum = h.history[metric]
+                sum_val = h.history[f'val_{metric}']
+            else:
+                sum = np.add(sum, h.history[metric])
+                sum_val = np.add(sum_val, h.history[f'val_{metric}'])
+        mean = [i/5 for i in sum]
+        mean_val = [i/5 for i in sum_val]
+        return mean, mean_val
+    
+    mean_acc, mean_val_acc = get_mean('sparse_categorical_accuracy')
+    mean_loss, mean_val_loss = get_mean('loss')
+    fig, axs = plt.subplots(1,2, figsize=(14,6))
+    axs[0].plot(mean_acc, 'g', label='Training')
+    axs[0].plot(mean_val_acc, 'b', label='Validation')
+    axs[0].set_ylim(0.6, 1.0)
+    axs[0].set_ylabel("Accuracy")
+    axs[0].set_xlabel("Epoch")
+    axs[0].set_title("Average training- and validation accuracy")
+    axs[0].grid()
 
-    fig, axs = plt.subplots(2,3)
-    for i, h in enumerate(history):
-        pos = index_to_pos[str(i)]
-        axs[pos[0], pos[1]].plot(h.history['loss'])
-        axs[pos[0], pos[1]].plot(h.history['val_loss'])
-        axs[pos[0], pos[1]].set_title(f"Fold {i + 1}")
-    fig.supxlabel("Epoch")
-    fig.supylabel("Loss")
-    fig.delaxes(axs[1,2])
+    axs[1].plot(mean_loss, 'g', label='Training')
+    axs[1].plot(mean_val_loss, 'b', label='Validation')
+    axs[1].set_ylim(0, 1.0)
+    axs[1].set_ylabel("Loss")
+    axs[1].set_xlabel("Epoch")
+    axs[1].set_title("Average training- and validation loss")
+    axs[1].grid()
+    axs[1].legend(loc="upper right")
+    fig.suptitle(f"5-fold Cross-Validation on the {name} Training Dataset")
     plt.show()
+    fig.savefig(f"cross_val_{name}.pdf")
 
 def plot_rf_training(cm):
     cm_plot = ConfusionMatrixDisplay(cm)
@@ -130,3 +137,9 @@ def plot_rec_len_freq(data_ls, title, xmax=30, xlab="Recording Length"):
     plt.title(title)
     save_plot(title + "rec_len")
     plt.show()
+
+def plot_cm(cm, n_labels):
+    df_cm = pd.DataFrame(cm, range(n_labels), range(n_labels))
+    sns.heatmap(df_cm, annot=True)
+    plt.show()
+    exit()

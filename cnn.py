@@ -1,6 +1,7 @@
 import multiprocessing
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import confusion_matrix
 
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential, optimizers
@@ -21,6 +22,11 @@ class CnnModel:
             "learning_rate": 0.01,
             "kernel_size": 5
         } if not hp_optimization else None
+        self.best_params_digits = {
+            "filters": 128,
+            "learning_rate": 0.01,
+            "kernel_size": 2
+        }
     
     def get_model(self):
         self.learning_rate = float(self.best_params.get('learning_rate'))
@@ -70,7 +76,7 @@ class CnnModel:
                 overwrite=True
             )
             stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
-            self.tuner.search(X_train, y_train, validation_split=0.2, epochs=epochs, callbacks=[stop_early])
+            self.tuner.search(X_train, y_train, validation_split=0.2, epochs=epochs, verbose=0, callbacks=[stop_early])
             self.best_params = self.tuner.get_best_hyperparameters(num_trials=1)[0]
             print(f"learning rate: {self.best_params.get('learning_rate')}")
             print(f"filters: {self.best_params.get('filters')}")
@@ -93,7 +99,7 @@ class CnnModel:
         for train, test in tqdm(kfold.split(X_train, y_train), total=num_folds):
             valid_dataset = tf.data.Dataset.from_tensor_slices((X_train[test], y_train[test])).batch(32)
             history, cnn_model = self.train(X_train[train], y_train[train], valid=valid_dataset)
-            loss, acc = self.eval(cnn_model, X_train[test], y_train[test])
+            loss, acc, cm = self.eval(cnn_model, X_train[test], y_train[test])
             loss_per_fold.append(loss)
             acc_per_fold.append(acc)
             history_per_fold.append(history)
@@ -103,5 +109,8 @@ class CnnModel:
     def eval(self, model, X_test, y_test):
         X_test, y_test = tuple(map(np.array, [X_test, y_test]))
         score = model.evaluate(x=X_test, y=y_test, verbose=0)
+        y_pred = model.predict(X_test)
+        y_pred = [np.argmax(i) for i in y_pred]
+        cm = confusion_matrix(y_test, y_pred, normalize="pred")
         loss, accuracy = score[:2]
-        return loss, accuracy
+        return loss, accuracy, cm
