@@ -8,10 +8,6 @@ from tensorflow.keras import layers, Sequential, optimizers
 from tqdm import tqdm
 import keras_tuner as kt
 from utils import RANDOM_STATE
-import os
-
-# prevent tensorflow gpu warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 class CnnModel:
     def __init__(self, input_shape, n_classes, hp_optimization=False, data=None) -> None:

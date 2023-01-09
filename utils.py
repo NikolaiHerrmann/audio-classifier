@@ -3,9 +3,6 @@ import random
 
 import numpy as np
 
-# prevent tensorflow gpu warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
 import tensorflow as tf
 from multiprocessing import Pool
 from functools import partial
