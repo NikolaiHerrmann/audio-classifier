@@ -1,7 +1,7 @@
 import multiprocessing
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential, optimizers
@@ -88,24 +88,24 @@ class CnnModel:
 
     def cross_val(self, X_train, y_train, num_folds):
         acc_per_fold = []
-        loss_per_fold = []
+        f1_per_fold = []
         history_per_fold = []
         kfold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=RANDOM_STATE)
         for train, test in tqdm(kfold.split(X_train, y_train), total=num_folds):
             valid_dataset = tf.data.Dataset.from_tensor_slices((X_train[test], y_train[test])).batch(32)
             history, cnn_model = self.train(X_train[train], y_train[train], valid=valid_dataset)
-            loss, acc, cm = self.eval(cnn_model, X_train[test], y_train[test])
-            loss_per_fold.append(loss)
+            _, acc, f1 = self.eval(cnn_model, X_train[test], y_train[test])
+            f1_per_fold.append(f1)
             acc_per_fold.append(acc)
             history_per_fold.append(history)
-        print(f"Cross-validation results for {num_folds} folds -> avg. loss: {sum(loss_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
+        print(f"Cross-validation results for {num_folds} folds -> avg. f1: {sum(f1_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
         return history_per_fold
 
     def eval(self, model, X_test, y_test):
         X_test, y_test = tuple(map(np.array, [X_test, y_test]))
-        score = model.evaluate(x=X_test, y=y_test, verbose=0)
         y_pred = model.predict(X_test)
         y_pred = [np.argmax(i) for i in y_pred]
         cm = confusion_matrix(y_test, y_pred)
-        loss, accuracy = score[:2]
-        return loss, accuracy, cm
+        acc = accuracy_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        return cm, acc, f1

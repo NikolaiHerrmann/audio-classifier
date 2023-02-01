@@ -141,11 +141,11 @@ def plot_rec_len_freq(data_ls, title, xmax=30, xlab="Recording Length"):
     save_plot(title + "rec_len")
     plt.show()
 
-def plot_cm(cm, name):
+def plot_cm(cm, name, hc=None):
     cm_plot = ConfusionMatrixDisplay(cm)
     cm_plot.plot()
     plt.xlabel("Predicted Speaker")
     plt.ylabel("True Speaker")
     plt.title(f"Confusion Matrix for {name} Training Dataset")
-    plt.savefig(f"cm_{name}.pdf")
+    plt.savefig(f"cm_{name}_{hc}.pdf")
     plt.clf()
