@@ -1,5 +1,10 @@
 
-
+## Run instructions
+1) Install the requirements (`requirements.txt`).
+2) Run the `train.py`-file:
+```commandline
+python train.py
+```
 ## Japanese Vowel (/ae/) Data Set
 
 **Size**

@@ -9,20 +9,21 @@ from utils import RANDOM_STATE
 from tqdm import tqdm
 
 class HandcraftedModel:
-    def __init__(self, type_) -> None:
+    def __init__(self, type_, dataset) -> None:
+        C = 1 if dataset == "vowels" else 20
+        kernel = 'linear' if dataset == "vowels" else 'rbf'
+        n_estimators = 100
         types_ = {
-            "rf": (RandomForestClassifier(random_state=RANDOM_STATE), {'n_estimators': [10, 20, 50, 100]}),
-            "lr": (LogisticRegression(random_state=RANDOM_STATE), {'C': [1, 10, 20, 50], 'solver': ['liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}),
-            "svm": (SVC(random_state=RANDOM_STATE), {'C': [1, 10, 20, 50], 'kernel': ['linear', 'poly', 'rbf', 'sigmoid'], 'degree': [3, 6, 9]})
+            "rf": RandomForestClassifier(random_state=RANDOM_STATE, n_estimators=n_estimators),
+            "svm": SVC(random_state=RANDOM_STATE, C=C, kernel=kernel)
         }
-        self.model, self.params = types_[type_]
+        self.model = types_[type_]
         
     def train(self, X_train, y_train):
-        model = GridSearchCV(self.model, self.params, n_jobs=-1)
+        model = self.model
         X_train_shuffle, y_train_shuffle = shuffle(X_train, y_train, random_state=RANDOM_STATE)
         model.fit(X_train_shuffle, y_train_shuffle)
         return model
-
 
     def cross_val(self, X_train, y_train, num_folds):
         acc_per_fold = []

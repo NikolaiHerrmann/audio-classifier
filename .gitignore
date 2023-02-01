@@ -13,3 +13,5 @@ figures/
 spoken_digits/spectrograms
 spoken_digits/min_max_values.pkl
 __pycache__
+.DS_Store
+**/.DS_Store

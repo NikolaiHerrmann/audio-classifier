@@ -22,7 +22,8 @@ def train_japanese_vowels(plot=False):
     input_shape_vowels = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_vowels_uni, y_train_vowels]))
 
-    ######################## CNN ########################
+    # ######################## CNN ########################
+    print("######## CNN MODEL ########")
     cnn_model = CnnModel(input_shape=input_shape_vowels, n_classes=9, data="vowels")
     history, model = cnn_model.train(X_train, y_train)
 
@@ -38,15 +39,13 @@ def train_japanese_vowels(plot=False):
         plot_cm(cm, "Vowels")
 
     ######################## HC ########################
+    print("######## HC MODEL ########")
     X_feat_train_vowels = extract_features(X_train_vowels_uni)
     X_feat_test_vowels = extract_features(X_test_vowels_uni)
     X_train, y_train = tuple(map(np.array, [X_feat_train_vowels, y_train_vowels]))
 
-    hand_crafted_model = HandcraftedModel('rf')
+    hand_crafted_model = HandcraftedModel('svm', 'vowels')
     model = hand_crafted_model.train(X_train, y_train)
-    print("\n The best estimator across ALL searched params:\n", model.best_estimator_)
-    print("\n The best score across ALL searched params:\n", model.best_score_)
-    print("\n The best parameters across ALL searched params:\n", model.best_params_)
 
     # Cross-validation
     hand_crafted_model.cross_val(X_train, y_train, 5)
@@ -54,7 +53,7 @@ def train_japanese_vowels(plot=False):
     cm, acc, f1 = hand_crafted_model.eval(model, X_feat_test_vowels, y_test_vowels)
     print(f'Test accuracy: {acc} / Test F1: {f1}')
     if plot:
-        plot_cm(cm, "Vowels", "RF")
+        plot_cm(cm, "Vowels", "SVM")
 
 
 def train_spoken_digits(plot=False):
@@ -64,7 +63,8 @@ def train_spoken_digits(plot=False):
     input_shape_digits = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_digits_uni, y_train_digits]))
 
-    ######################## CNN ########################
+    # ######################## CNN ########################
+    print("######## CNN MODEL ########")
     cnn_model = CnnModel(input_shape=input_shape_digits, n_classes=6, data="digits")
     history_digits, cnn_model_digits = cnn_model.train(X_train, y_train)
 
@@ -80,15 +80,13 @@ def train_spoken_digits(plot=False):
         plot_cm(cm, "Digits")
 
     ######################## HC ########################
+    print("######## HC MODEL ########")
     X_feat_train_digits = extract_features(X_train_digits_uni)
     X_feat_test_digits = extract_features(X_test_digits_uni)
     X_train, y_train = tuple(map(np.array, [X_feat_train_digits, y_train_digits]))
 
-    hand_crafted_model = HandcraftedModel('rf')
+    hand_crafted_model = HandcraftedModel('svm', 'digits')
     model = hand_crafted_model.train(X_train, y_train)
-    print("\n The best estimator across ALL searched params:\n", model.best_estimator_)
-    print("\n The best score across ALL searched params:\n", model.best_score_)
-    print("\n The best parameters across ALL searched params:\n", model.best_params_)
 
     # Cross-validation
     hand_crafted_model.cross_val(X_train, y_train, 5)
@@ -96,9 +94,12 @@ def train_spoken_digits(plot=False):
     cm, acc, f1 = hand_crafted_model.eval(model, X_feat_test_digits, y_test_digits)
     print(f'Test accuracy: {acc} / Test F1: {f1}')
     if plot:
-        plot_cm(cm, "Digits", "RF")
+        plot_cm(cm, "Digits", "SVM")
 
 
 if __name__ == "__main__":
+    print("######## VOWELS DATASET ########")
     train_japanese_vowels(True)
+    print()
+    print("######## DIGITS DATASET ########")
     train_spoken_digits(True)

@@ -1,0 +1,11 @@
+tqdm
+numpy
+scikit-learn
+multiprocessing
+tensorflow
+keras_tuner
+seaborn
+pandas
+matplotlib
+scipy
+functools
