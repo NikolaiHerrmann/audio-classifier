@@ -12,7 +12,7 @@ class HandcraftedModel:
     def __init__(self, type_, dataset) -> None:
         C = 1 if dataset == "vowels" else 20
         kernel = 'linear' if dataset == "vowels" else 'rbf'
-        n_estimators = 100
+        n_estimators = 200
         types_ = {
             "rf": RandomForestClassifier(random_state=RANDOM_STATE, n_estimators=n_estimators),
             "svm": SVC(random_state=RANDOM_STATE, C=C, kernel=kernel)
