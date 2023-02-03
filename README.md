@@ -1,7 +1,7 @@
 
 ## Run instructions
-1) Install the requirements (`requirements.txt`).
-2) Run the `train.py`-file:
+1) Install the Python [requirements](requirements.txt) (Python 3.10.9).
+2) Run the [train.py](train.py) file:
 ```commandline
 python train.py
 ```
@@ -35,9 +35,6 @@ python train.py
 - recordings are trimmed, almost no silence at start/end points
 
 **Feature Extraction**
-
-- **MFCC** *(Mel Frequency Cepstral Coefficients)*:
-    - Apparently can be better than LPCC
 
 - **LPCC** *(Linear Predictive Cepstral Coefficients)*:
     - Using `matlab_speech_features` functions to extract LPCCs
