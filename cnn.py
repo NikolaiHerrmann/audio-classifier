@@ -24,6 +24,9 @@ class CnnModel:
         } if not hp_optimization else None
     
     def get_model(self):
+        """
+        Returns a compiled model with fixed hyper-parameters.
+        """
         self.learning_rate = float(self.best_params.get('learning_rate'))
         self.filters = int(self.best_params.get('filters'))
         self.kernel_size = int(self.best_params.get('kernel_size'))
@@ -43,6 +46,9 @@ class CnnModel:
         return model
         
     def model_builder(self, hp):
+        """
+        Builds a model for KerasTuner to tune.
+        """
         hp_filters = hp.Int('filters', min_value=32, max_value=128, step=32)
         hp_kernels = hp.Int('kernel_size', min_value=1, max_value=5, step=1)
         model = Sequential(
@@ -62,6 +68,9 @@ class CnnModel:
         return model
 
     def train(self, X_train, y_train, epochs=100, batch_size=32, valid=[]):
+        """
+        Trains the CNN model by optionally performing tuning.
+        """
         train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size)
         if not self.best_params:
             self.tuner = kt.BayesianOptimization(
@@ -87,6 +96,9 @@ class CnnModel:
         return history, cnn_model
 
     def cross_val(self, X_train, y_train, num_folds):
+        """
+        Performs cross-validation and saves results.
+        """
         acc_per_fold = []
         f1_per_fold = []
         history_per_fold = []
@@ -102,6 +114,9 @@ class CnnModel:
         return history_per_fold
 
     def eval(self, model, X_test, y_test):
+        """
+        Evaluates the model on a test set.
+        """
         X_test, y_test = tuple(map(np.array, [X_test, y_test]))
         y_pred = model.predict(X_test)
         y_pred = [np.argmax(i) for i in y_pred]

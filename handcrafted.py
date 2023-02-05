@@ -20,12 +20,18 @@ class HandcraftedModel:
         self.model = types_[type_]
         
     def train(self, X_train, y_train):
+        """
+        Trains the hand-crafted model by first shuffling the data with a set seed.
+        """
         model = self.model
         X_train_shuffle, y_train_shuffle = shuffle(X_train, y_train, random_state=RANDOM_STATE)
         model.fit(X_train_shuffle, y_train_shuffle)
         return model
 
     def cross_val(self, X_train, y_train, num_folds):
+        """
+        Performs cross-validation and saves results.
+        """
         acc_per_fold = []
         f1_per_fold = []
         kfold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=RANDOM_STATE)
@@ -37,6 +43,9 @@ class HandcraftedModel:
         print(f"Cross-validation results for {num_folds} folds -> avg. f1: {sum(f1_per_fold) / num_folds}, avg. accuracy: {sum(acc_per_fold) / num_folds}")
 
     def eval(self, model, X_test, y_test):
+        """
+        Evaluates the model on a test set.
+        """
         y_pred = model.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred, average='weighted')
