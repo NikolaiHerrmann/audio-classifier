@@ -1,3 +1,6 @@
+## Goal
+
+This research is aimed to classify multivariate time-series to perform speaker identification. We specifically investigate speech recordings from which linear prediction cepstral coefficients (LPCCs) coefficients have been extracted. Three classifiers are being examined for this task: a simple Convolutional Neural Network (CNN) using 1D convolution, a Random Forest classifier and a Support Vector Machine. The latter two use hand-crafted features (i.e. mean, standard deviation and slope of each time-series). These classifiers were trained and tested on two different datasets, namely the Japanese Vowels dataset and the (English) Free Spoken Digit dataset. In this manner, the classifiers' performances are evaluated in two different scenarios, as the datasets vary in language, length and task. We find that the hand-crafted classifiers outperformed the neural network classifier.
 
 ## Run instructions
 1) Install the Python [requirements](requirements.txt) (Python 3.10.9).
