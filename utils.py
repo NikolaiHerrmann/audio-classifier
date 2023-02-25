@@ -16,6 +16,9 @@ RANDOM_STATE = 44
 
 
 def seed():
+    """
+    Sets all seeds to a deterministic seed.
+    """
     random.seed(RANDOM_STATE)
     np.random.seed(RANDOM_STATE)
     tf.random.set_seed(RANDOM_STATE)

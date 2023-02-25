@@ -16,13 +16,14 @@ from handcrafted import HandcraftedModel
 from cnn import CnnModel
 
 def train_japanese_vowels(plot=False):
+    # Data preparation
     X_train_vowels, y_train_vowels, X_test_vowels, y_test_vowels = get_japanese_vowels()
     rec_len = 15
     X_train_vowels_uni, X_test_vowels_uni = pre_process(X_train_vowels, X_test_vowels, rec_len)
     input_shape_vowels = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_vowels_uni, y_train_vowels]))
 
-    # ######################## CNN ########################
+    ######################## CNN ########################
     print("######## CNN MODEL ########")
     cnn_model = CnnModel(input_shape=input_shape_vowels, n_classes=9, data="vowels")
     history, model = cnn_model.train(X_train, y_train)
@@ -57,13 +58,14 @@ def train_japanese_vowels(plot=False):
 
 
 def train_spoken_digits(plot=False):
+    # Data preparation
     X_train_digits, y_train_digits, X_test_digits, y_test_digits = get_spoken_digits()
     rec_len = 27
     X_train_digits_uni, X_test_digits_uni = pre_process(X_train_digits, X_test_digits, rec_len)
     input_shape_digits = (rec_len, 12)
     X_train, y_train = tuple(map(np.array, [X_train_digits_uni, y_train_digits]))
 
-    # ######################## CNN ########################
+    ######################## CNN ########################
     print("######## CNN MODEL ########")
     cnn_model = CnnModel(input_shape=input_shape_digits, n_classes=6, data="digits")
     history_digits, cnn_model_digits = cnn_model.train(X_train, y_train)

@@ -40,6 +40,9 @@ def get_labels(data, block_lens):
 
 
 def get_japanese_vowels():
+    """
+    Loads the Japanese Vowels dataset.
+    """
     data_train_vowels = np.loadtxt(os.path.join("japanese_vowels", "ae.train"))
     data_test_vowels = np.loadtxt(os.path.join("japanese_vowels", "ae.test"))
     train_block_lens = [30] * 9
@@ -51,6 +54,9 @@ def get_japanese_vowels():
 
 
 def get_spoken_digits(is_lpcc=True):
+    """
+    Loads the Free Spoken Digits dataset.
+    """
     DIGIT_SPEAKERS = ["george", "jackson", "lucas", "nicolas", "theo", "yweweler"]
     path = os.path.join("spoken_digits", "txt_lpccs")
     X = []
@@ -73,6 +79,9 @@ def get_spoken_digits(is_lpcc=True):
 
 
 def pre_process(X_train, X_test, rec_len):
+    """
+    Applies pre-processing in the form of uniform scaling.
+    """
     X_train_uni = uniform_scaling(X_train, rec_len)
     X_test_uni = uniform_scaling(X_test, rec_len)
 
